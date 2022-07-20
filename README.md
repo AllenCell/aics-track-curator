@@ -19,7 +19,11 @@ bash install.sh
 
 # Usage:
 
-Open Paraview and you should see an button name `curator` in the menu.
+Open Paraview and you should see a button named `curator` in the menu. To check for the available actions, plese click `curator`, type `help` and hit OK.
 
-To see the available actions, plese click `curator`, type `help` and hit OK.
+To create a PNG image with the curated lineage information go to the terminal and type:
 
+```
+conda activate curator
+python ~/.config/ParaView/Macros/curator.py path/to/dataset/directory
+```
