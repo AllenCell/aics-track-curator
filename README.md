@@ -7,7 +7,7 @@ Python script for track curation in Paraview. Only available for OSX at the mome
 
 2. Clone this repo:
 
-`git clone https://github.com/aics-int/nuc-morph-analysis.git`
+`git clone https://github.com/aics-int/aics-track-curator.git`
 
 3. Create an environment
 
