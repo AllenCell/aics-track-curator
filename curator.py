@@ -177,13 +177,15 @@ class Lineage:
         idxmax = self.nodes.tf.idxmax()
         print("Track", self.nodes.loc[idxmin, "track_id"], "starts at time", self.nodes.loc[idxmin, "t0"])
         for index, row in self.edges[::-1].iterrows():
-            tidi = self.nodes.at[row.source, "track_id"]
-            tidj = self.nodes.at[row.target, "track_id"]
-            term = self.nodes.at[row.target, "term"]
+            source = int(row.source)
+            target = int(row.target)
+            tidi = self.nodes.at[source, "track_id"]
+            tidj = self.nodes.at[target, "track_id"]
+            term = self.nodes.at[target, "term"]
             if not term:
-                if len(self.edges.loc[self.edges.source==row.target]) == 2:
+                if len(self.edges.loc[self.edges.source==target]) == 2:
                     term = 3
-                if self.nodes.at[row.target, "tf"] == 569:
+                if self.nodes.at[target, "tf"] == 569:
                     term = 4
             term = [".", "E", "A", "D", "T"][term]
             print(tidi, "> \t",tidj, "\t", term)
