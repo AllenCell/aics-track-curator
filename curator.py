@@ -170,6 +170,24 @@ class Lineage:
         plt.savefig(path, dpi=150)
         plt.close("all")
 
+    def display_lineage_info(self, track_id):
+        lineage_ids = self.get_ids_in_same_lineage_as(self.df_full, track_id)
+        self.update(lineage_ids)
+        idxmin = self.nodes.t0.idxmin()
+        idxmax = self.nodes.tf.idxmax()
+        print("Track", self.nodes.loc[idxmin, "track_id"], "starts at time", self.nodes.loc[idxmin, "t0"])
+        for index, row in self.edges[::-1].iterrows():
+            tidi = self.nodes.at[row.source, "track_id"]
+            tidj = self.nodes.at[row.target, "track_id"]
+            term = self.nodes.at[row.target, "term"]
+            if not term:
+                if len(self.edges.loc[self.edges.source==row.target]) == 2:
+                    term = 3
+                if self.nodes.at[row.target, "tf"] == 569:
+                    term = 4
+            term = [".", "E", "A", "D", "T"][term]
+            print(tidi, "> \t",tidj, "\t", term)
+
     @staticmethod
     def get_parent(df, track_id):
         parent_id = df.loc[df.track_id==track_id].parent_id.unique()
@@ -358,7 +376,6 @@ class Curator:
         return tracks_index_map
 
     def split_track(self, text):
-        # TODO: Check if the splitted track has childs and reassign the parents if so.
         tp = self.get_current_movie_tp()
         track_id = self.get_current_track_id()
         print(f"Spliting track {track_id} at timepoint {tp}...")
@@ -367,17 +384,24 @@ class Curator:
 
         self.df.loc[(self.df.track_id==track_id)&(self.df.index_sequence>tp), "track_id"] = track_id_new
         self.df.loc[self.df.track_id==track_id_new, "parent_id"] = track_id if "unparent" not in text else -1
+        # parent_id needs to be updated for any existing daughter track
+        self.df.loc[self.df.parent_id==track_id, "parent_id"] = track_id_new
         tracks_index_map = self.save_manifest()
 
         self.reload()
         self.load_track(f"load {tracks_index_map[track_id]}", update=False)
 
     def merge_track(self, text):
-        # TODO: validate the merging (tracks cannot overlap in time)
-
         tp = self.get_current_movie_tp()
         track_id = self.get_current_track_id()
         track_id_merge = int(self.get_last_parameter(text))
+
+        t0 = self.df.loc[self.df.track_id==track_id_merge, "index_sequence"].min()
+        tf = self.df.loc[self.df.track_id==track_id, "index_sequence"].max()
+        if t0-tf < 0:
+            print("Operation not permitted.")
+            return
+
         print(f"Merging tracks {track_id} and {track_id_merge}...")
 
         parent_id = self.df.loc[(self.df.track_id==track_id)|(self.df.track_id==track_id_merge), "parent_id"].max()
@@ -468,13 +492,12 @@ class Curator:
         self.reload()
         ReloadFiles(self.tracks)
 
-    def save_lineage_summary(self, text):
+    def display_current_lineage_info(self, text):
         lineage = Lineage()
         lineage.set_data(self.df)
-        lineage.check_df_consistency()
-        lineage.save_lineage_summary(str(self.path/"lineage.png"))
-        print("Lineage summary file saved.")
- 
+        track_id = self.get_current_track_id()
+        lineage.display_lineage_info(track_id)
+
     def set_termination(self, text, mode):
         track_id = self.get_current_track_id()
         track_id_to_reload = track_id
@@ -495,6 +518,8 @@ class Curator:
 
     def interpreter(self):
         text = input()
+        if text.isnumeric():
+            text = "load "+text
         if "cancel" in text:
             return
         if "help" in text:
@@ -519,8 +544,8 @@ class Curator:
             self.get_track_info(text)
         if "remesh" in text:
             self.remesh(text)
-        if "summary" in text:
-            self.save_lineage_summary(text)
+        if "l" == text:
+            self.display_current_lineage_info(text)
         if "edge" in text:
            self.set_termination(text, "edge")
         if "apoptosis" in text:
