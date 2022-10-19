@@ -518,6 +518,42 @@ class Curator:
         self.load_track(f"load {tracks_index_map[track_id_to_reload]}", update=False)
         print(f"Setting termination {mode} for track {track_id}.")
 
+    def progress(self, text):
+        max_index = 569 # last timepoint of the movie, hard coded for goldilocks
+        # calculate how many track_ids total for approach of interest
+        # calculate how many track_ids have not been annotated 
+        total_first_frame_list = []
+        total_last_frame_list = []
+        todo_first_frame_list = []
+        todo_last_frame_list = []
+
+        for track, df_track in self.df.groupby('track_id'): # is this how you would get the dataframe?
+            time = df_track['index_sequence'].to_numpy()
+
+            if np.min(time) == 0:
+                track_id_number = df_track['track_id'].to_numpy()
+                track_id_number = track_id_number[0]
+                total_first_frame_list.append(track_id_number)
+                x = track_id_number in df['parent_id'].unique()
+                if x is False:
+                    todo_first_frame_list.append(track_id_number)
+            
+            if np.max(time) == max_index:
+                track_id_number = df_track['track_id'].to_numpy()
+                track_id_number = track_id_number[0]
+                total_last_frame_list.append(track_id_number)
+                parent = df_track['parent_id'].to_numpy()
+                parent = parent[0]
+                if parent == -1:
+                    todo_last_frame_list.append(track_id_number)
+
+        # calculate percent complete
+        first = 100-((len(todo_first_frame_list))/(len(total_first_frame_list))*100)
+        last = 100-((len(todo_last_frame_list))/(len(total_last_frame_list))*100)
+        # display percent complete and next track_id
+        print('First Frame:', round(first),'% complete. \nNext track_id:', todo_first_frame_list[0])
+        print('Last Frame:', round(last),'% complete. \nNext track_id:', todo_last_frame_list[0])
+
     def interpreter(self):
         text = input()
         if text.isnumeric():
@@ -552,6 +588,9 @@ class Curator:
            self.set_termination(text, "edge")
         if "apoptosis" in text:
             self.set_termination(text, "apoptosis")
+        if "progress" in text:
+            self.progress()
+            
 
     def help(self):
         print("-----------------------------\n")
