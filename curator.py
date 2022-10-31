@@ -527,32 +527,28 @@ class Curator:
         todo_first_frame_list = []
         todo_last_frame_list = []
 
-        for track, df_track in self.df.groupby('track_id'): # is this how you would get the dataframe?
+        for track, df_track in self.df.groupby('track_id'):
             time = df_track['index_sequence'].to_numpy()
 
             if np.min(time) == 0:
-                track_id_number = df_track['track_id'].to_numpy()
-                track_id_number = track_id_number[0]
-                total_first_frame_list.append(track_id_number)
-                x = track_id_number in df['parent_id'].unique()
+                total_first_frame_list.append(track)
+                x = track in self.df['parent_id'].unique()
                 if x is False:
-                    todo_first_frame_list.append(track_id_number)
+                    todo_first_frame_list.append(track)
             
             if np.max(time) == max_index:
-                track_id_number = df_track['track_id'].to_numpy()
-                track_id_number = track_id_number[0]
-                total_last_frame_list.append(track_id_number)
+                total_last_frame_list.append(track)
                 parent = df_track['parent_id'].to_numpy()
                 parent = parent[0]
                 if parent == -1:
-                    todo_last_frame_list.append(track_id_number)
+                    todo_last_frame_list.append(track)
 
         # calculate percent complete
         first = 100-((len(todo_first_frame_list))/(len(total_first_frame_list))*100)
         last = 100-((len(todo_last_frame_list))/(len(total_last_frame_list))*100)
-        # display percent complete and next track_id
-        print('First Frame:', round(first),'% complete. \nNext track_id:', todo_first_frame_list[0])
-        print('Last Frame:', round(last),'% complete. \nNext track_id:', todo_last_frame_list[0])
+        # display percent complete and next randomly chosen track_id from the to do list so that you can skip if necessary
+        print('First Frame:', round(first),'% complete. \nNext track_id:', np.random.choice(todo_first_frame_list,1))
+        print('Last Frame:', round(last),'% complete. \nNext track_id:', np.random.choice(todo_last_frame_list,1))
 
     def interpreter(self):
         text = input()
@@ -589,7 +585,7 @@ class Curator:
         if "apoptosis" in text:
             self.set_termination(text, "apoptosis")
         if "progress" in text:
-            self.progress()
+            self.progress(text)
             
 
     def help(self):
