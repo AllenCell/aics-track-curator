@@ -27,7 +27,7 @@ class TrackNeighsCalculator():
             for ag in [type1, type2]:
                 coords = df_ends[[("centroid_x", ag), ("centroid_y", ag), ("index_sequence", ag)]].values
                 coords_type.append(coords)
-            dist = np.linalg.norm(coords_type[0][:,None]-coords_type[1][None,:])
+            dist = np.linalg.norm(coords_type[0][:,None]-coords_type[1][None,:], axis=-1)
             dists.append(dist)
         dists = np.array(dists).min(axis=0)
         return dists
