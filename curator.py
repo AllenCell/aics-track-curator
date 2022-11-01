@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from scipy import spatial as spspatial
 
 class TrackNeighsCalculator():
 
@@ -28,7 +27,7 @@ class TrackNeighsCalculator():
             for ag in [type1, type2]:
                 coords = df_ends[[("centroid_x", ag), ("centroid_y", ag), ("index_sequence", ag)]].values
                 coords_type.append(coords)
-            dist = spspatial.distance.cdist(coords_type[0], coords_type[1])
+            dist = np.linalg.norm(coords_type[0][:,None]-coords_type[1][None,:])
             dists.append(dist)
         dists = np.array(dists).min(axis=0)
         return dists
