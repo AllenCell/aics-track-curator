@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -235,7 +236,9 @@ class Curator:
         if config is None:
             return
         path = str(sm.Fetch(config).GetValue(0, 1))
-        self.path = Path(path.replace("\"",""))
+        if os.name == "nt":
+            path = path.replace("#", os.sep)
+        self.path = Path(path)
         self.df = self.load_manifest()
         self.neighs_calculator = TrackNeighsCalculator(self.df)
         self.tracks = FindSource("tracks")
@@ -253,7 +256,10 @@ class Curator:
         movie_display.SetRepresentationType('Slice')
         lut = GetColorTransferFunction('TiffScalars')
         lut.ApplyPreset('Grayscale', True)
-        pd.DataFrame({"path": str(path)}, index=[0]).to_csv(str(path/"config.csv"))
+        path_txt = str(path)
+        if os.name == "nt":
+            path_txt = path_txt.replace(os.sep, "#")
+        pd.DataFrame({"path": path_txt}, index=[0]).to_csv(str(path/"config.csv"))
         config = CSVReader(registrationName="config", FileName=[str(path/"config.csv")])
         self.view1.Update()
 
