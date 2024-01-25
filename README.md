@@ -72,7 +72,8 @@ init /Users/chantelle.leveille/Documents/Lineage/goldilocks
 9. Properties in left pane: Slicing -> Slice is how you move frames 
 10. The green triangle tool is used to select track in the movie panel
 
-![[Paraview.png|700]]
+![Paraview screenshot](Paraview.png)
+
 ### Curator Commands:
 **init:** Initialize a started project.  Use: init path/to/folder.
 **track_id**  Load a new track for inspection.  Use: track_id (i.e. 205)
