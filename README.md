@@ -49,7 +49,7 @@ Goal: Have a how-to document to provide detailed steps for generating lineage tr
 1. open ParaView 
 2. Curator: 
 ```
-init /Users/chantelle.leveille/Documents/Lineage/goldilocks
+init /path/to/your/folder/
 ``` 
 4. The [[Lineage Building Method (Curator)#Workflow|workflow]] saves the manifest as you go so you can start where you left off. Note: every update or reopening will reindex the track_ids from longest to shortest. [[Lineage Building Method (Curator)#Display Lineage|Visualize the lineage]] to continue a tree or start from the longest track (load 0))
 
@@ -128,7 +128,7 @@ To generate a figure with the lineage and current track_ids of the annotated cel
 2. conda activate curator
 3. command below with path to folder
 ```
-python ~/.config/ParaView/Macros/curator.py /Users/chantelle.leveille/Documents/Lineage/goldilocks
+python ~/.config/ParaView/Macros/curator.py /path/to/your/folder/
 ``` 
 
 i.e. 
