@@ -7,7 +7,7 @@ Python script for track curation in Paraview. Only available for OSX at the mome
 
 2. Clone this repo:
 
-`git clone https://github.com/aics-int/aics-track-curator.git`
+`git clone https://github.com/AllenCell/aics-track-curator.git`
 
 3. Create an environment
 
@@ -39,7 +39,7 @@ Goal: Have a how-to document to provide detailed steps for generating lineage tr
 3) Validating track follows the cell of interest
 
 ### Start a new project:
-1. See README.md on [Github Repo](https://github.com/aics-int/aics-track-curator) if this is your first project. 
+1. See README.md on [Github Repo](https://github.com/AllenCell/aics-track-curator) if this is your first project.
 2. You will need a local folder containing manifest.csv, curator.py, movie.tif
 3. open ParaView
 4. Curator: import path to manifest csv
